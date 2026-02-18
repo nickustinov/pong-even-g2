@@ -144,38 +144,45 @@ export function drawGameOver(): void {
 // Title screen
 // ---------------------------------------------------------------------------
 
-export function drawTitleScreen(): void {
+let splashImg: HTMLImageElement | null = null
+let splashLoaded = false
+
+function loadSplash(): Promise<void> {
+  if (splashLoaded) return Promise.resolve()
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      splashImg = img
+      splashLoaded = true
+      resolve()
+    }
+    img.onerror = () => {
+      splashLoaded = true
+      resolve()
+    }
+    img.src = new URL('./splash.png', import.meta.url).href
+  })
+}
+
+export async function drawTitleScreen(): Promise<void> {
+  await loadSplash()
+
   ctx.fillStyle = '#000'
   ctx.fillRect(0, 0, W, H)
 
-  // Decorative paddles
-  ctx.fillStyle = '#333'
-  ctx.fillRect(PADDLE_MARGIN, (H - PADDLE_H) / 2, PADDLE_W, PADDLE_H)
-  ctx.fillRect(W - PADDLE_MARGIN - PADDLE_W, (H - PADDLE_H) / 2, PADDLE_W, PADDLE_H)
-
-  // Center line
-  ctx.strokeStyle = '#222'
-  ctx.lineWidth = 2
-  ctx.setLineDash([8, 8])
-  ctx.beginPath()
-  ctx.moveTo(W / 2, 0)
-  ctx.lineTo(W / 2, H)
-  ctx.stroke()
-  ctx.setLineDash([])
+  if (splashImg) {
+    ctx.drawImage(splashImg, 0, 0, W, H)
+  }
 
   ctx.textAlign = 'center'
 
-  ctx.font = 'bold 36px system-ui, -apple-system, sans-serif'
-  ctx.fillStyle = '#fff'
-  ctx.fillText('PONG', W / 2, H / 2 - 20)
-
   ctx.font = '14px system-ui, -apple-system, sans-serif'
-  ctx.fillStyle = '#888'
-  ctx.fillText(`Swipe to move \u00B7 First to ${WIN_SCORE} wins`, W / 2, H / 2 + 15)
+  ctx.fillStyle = '#aaa'
+  ctx.fillText(`Swipe to move \u00B7 First to ${WIN_SCORE} wins`, W / 2, H - 60)
 
   ctx.font = '12px system-ui, -apple-system, sans-serif'
   ctx.fillStyle = '#555'
-  ctx.fillText('Tap to start', W / 2, H / 2 + 40)
+  ctx.fillText('Tap to start', W / 2, H - 40)
 
   ctx.textAlign = 'left'
 }
@@ -215,7 +222,7 @@ export async function pushFrame(): Promise<void> {
 
 export async function initDisplay(): Promise<void> {
   await setupPage()
-  drawTitleScreen()
+  await drawTitleScreen()
   await pushFrame()
   appendEventLog('Pong: display initialized')
 }

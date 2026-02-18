@@ -7,8 +7,8 @@ export const PADDLE_MARGIN = 16
 export const PADDLE_SPEED = 20
 
 export const BALL_SIZE = 8
-export const BALL_SPEED_INIT = 4
-export const BALL_SPEED_INC = 0.3  // speed increase per rally
+export const BALL_SPEED_INIT = 7
+export const BALL_SPEED_INC = 0.5  // speed increase per rally
 
 export const TICK_MS = 50
 export const WIN_SCORE = 7
