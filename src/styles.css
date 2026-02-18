@@ -1,2 +1,19 @@
-@import "tailwindcss";
 @import "../node_modules/@jappyjan/even-realities-ui/dist/even-realities-ui.css";
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+#app h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+#status {
+  color: var(--color-tc-2, #7b7b7b);
+  font-size: 0.875rem;
+}
