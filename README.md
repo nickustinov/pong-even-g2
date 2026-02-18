@@ -6,6 +6,8 @@ Pong game for [Even Realities G2](https://www.evenrealities.com/) smart glasses.
 
 Player vs AI. Swipe to move your paddle, first to 7 wins. No server required.
 
+![Screenshot](screenshot.png)
+
 ## Controls
 
 | Input | Action |
