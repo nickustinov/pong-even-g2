@@ -36,20 +36,24 @@ const LOGO_Y = 70
 let logoBytes: number[] | null = null
 let gameoverBytes: number[] | null = null
 
-async function loadImages(): Promise<void> {
-  const load = async (path: string): Promise<number[] | null> => {
-    try {
-      const url = new URL(path, import.meta.url).href
-      const res = await fetch(url)
-      const buf = await res.arrayBuffer()
-      return Array.from(new Uint8Array(buf))
-    } catch {
-      appendEventLog(`Pong: failed to load ${path}`)
-      return null
-    }
+async function loadImage(url: string, name: string): Promise<number[] | null> {
+  try {
+    const res = await fetch(url)
+    const buf = await res.arrayBuffer()
+    return Array.from(new Uint8Array(buf))
+  } catch {
+    appendEventLog(`Pong: failed to load ${name}`)
+    return null
   }
-  if (!logoBytes) logoBytes = await load('./logo.png')
-  if (!gameoverBytes) gameoverBytes = await load('./gameover.png')
+}
+
+// String literals in new URL() are required for Vite to detect and bundle these assets
+const logoUrl = new URL('./logo.png', import.meta.url).href
+const gameoverUrl = new URL('./gameover.png', import.meta.url).href
+
+async function loadImages(): Promise<void> {
+  if (!logoBytes) logoBytes = await loadImage(logoUrl, 'logo.png')
+  if (!gameoverBytes) gameoverBytes = await loadImage(gameoverUrl, 'gameover.png')
 }
 
 async function pushImage(bytes: number[] | null): Promise<void> {
