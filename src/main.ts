@@ -1,5 +1,4 @@
 import type { AppModule } from '../_shared/app-types'
-import { renderAppUI } from './ui'
 
 function updateStatus(text: string) {
   console.log(`[ui] ${text}`)
@@ -15,7 +14,7 @@ async function boot() {
   updateStatus(app.initialStatus ?? `${app.name} app ready`)
 
   const actions = await app.createActions(updateStatus)
-  renderAppUI(app, actions)
+  await actions.connect()
 }
 
 void boot().catch((error) => {

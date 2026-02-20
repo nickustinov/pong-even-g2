@@ -3,12 +3,7 @@ import { appendEventLog } from '../_shared/log'
 import { TICK_MS } from './layout'
 import { game, setBridge, resetGame } from './state'
 import { tick } from './game'
-import {
-  initDisplay,
-  drawFrame,
-  drawGameOver,
-  pushFrame,
-} from './renderer'
+import { initDisplay, pushFrame, showSplash } from './renderer'
 import { onEvenHubEvent, setStartGame } from './events'
 
 function sleep(ms: number): Promise<void> {
@@ -21,7 +16,6 @@ async function gameLoop(): Promise<void> {
     const start = Date.now()
 
     tick()
-    drawFrame()
     await pushFrame()
 
     const elapsed = Date.now() - start
@@ -29,7 +23,6 @@ async function gameLoop(): Promise<void> {
   }
 
   if (game.over) {
-    drawGameOver()
     await pushFrame()
     appendEventLog(`Pong: game over ${game.playerScore}-${game.aiScore}`)
   }
@@ -37,8 +30,13 @@ async function gameLoop(): Promise<void> {
 
 export function startGame(): void {
   if (game.running) return
+  if (game.over) {
+    game.over = false
+    void showSplash()
+    appendEventLog('Pong: back to splash')
+    return
+  }
   resetGame()
-  drawFrame()
   void pushFrame().then(() => {
     void gameLoop()
   })

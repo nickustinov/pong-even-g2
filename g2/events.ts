@@ -66,13 +66,13 @@ export function onEvenHubEvent(event: EvenHubEvent): void {
 
     case OsEventTypeList.SCROLL_TOP_EVENT:
       if (!scrollThrottled() && game.running) {
-        movePlayerUp()
+        movePlayerDown()
       }
       break
 
     case OsEventTypeList.SCROLL_BOTTOM_EVENT:
       if (!scrollThrottled() && game.running) {
-        movePlayerDown()
+        movePlayerUp()
       }
       break
   }

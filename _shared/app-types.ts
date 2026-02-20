@@ -12,5 +12,6 @@ export type AppModule = {
   connectLabel?: string
   actionLabel?: string
   initialStatus?: string
+  autoConnect?: boolean
   createActions: (setStatus: SetStatus) => Promise<AppActions> | AppActions
 }

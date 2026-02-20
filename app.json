@@ -1,0 +1,8 @@
+{
+  "package_id": "com.nickustinov.pong",
+  "name": "pong",
+  "version": "1.0.0",
+  "description": "Pong game for Even G2 smart glasses",
+  "author": "nickustinov",
+  "entrypoint": "index.html"
+}
