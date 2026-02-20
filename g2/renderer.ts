@@ -74,13 +74,13 @@ type PageMode = 'splash' | 'game' | 'gameover'
 let currentPage: PageMode = 'splash'
 
 function splashText(): string {
-  return 'Tap to start \u00B7 Swipe to move'
+  return `Wins: ${game.highScore} \u00B7 Tap to start`
 }
 
 function gameOverText(): string {
   const won = game.playerScore >= WIN_SCORE
   const label = won ? 'You win!' : 'You lose'
-  return `${label} ${game.playerScore}\u2013${game.aiScore} \u00B7 Tap to play`
+  return `${label} ${game.playerScore}\u2013${game.aiScore} \u00B7 Wins: ${game.highScore}`
 }
 
 function buildImagePage(text: string, textX: number): object {
@@ -125,7 +125,7 @@ function buildImagePage(text: string, textX: number): object {
 
 async function setupSplashPage(): Promise<void> {
   if (!bridge) return
-  const config = buildImagePage(splashText(), 166)
+  const config = buildImagePage(splashText(), 206)
 
   if (!startupRendered) {
     await bridge.createStartUpPageContainer(new CreateStartUpPageContainer(config))

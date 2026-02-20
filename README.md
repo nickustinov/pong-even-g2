@@ -4,7 +4,13 @@
 
 Pong game for [Even Realities G2](https://www.evenrealities.com/) smart glasses.
 
-Player vs AI. Swipe to move your paddle, first to 7 wins. No server required – everything runs client-side.
+Player vs AI. Swipe to move your paddle, first to 7 wins. Global win count shared across all players via Redis.
+
+### Play now
+
+Scan this QR code in the Even Realities app (Even Hub page) to play on your G2 glasses with the shared global score system:
+
+<img src="qr.png" width="200" />
 
 <p>
   <img src="screenshot-splash.png" width="49%" />
@@ -28,6 +34,14 @@ tick() → pushFrame() → sleep(remaining) → repeat
 ```
 
 The loop awaits each text push before scheduling the next tick. If a push is still in flight, the frame is silently dropped.
+
+### Global win count
+
+The win count is shared across all players via a Redis-backed API (`/api/best-score`). The Vercel serverless function uses a Lua script for atomic compare-and-set – a new count is only written if it exceeds the current value. The Redis key is `pong-even-g2:best`.
+
+On app start, the current win count is fetched and displayed on the splash screen. When the player wins a game, the count is incremented and submitted. If it exceeds the stored value, Redis is updated and the new count is shown immediately.
+
+Without `REDIS_URL` configured, scores won't persist between sessions.
 
 ### Grid
 
@@ -61,13 +75,15 @@ g2/
   index.ts       App module registration
   main.ts        Bridge connection and auto-connect
   app.ts         Game loop orchestrator
-  state.ts       Game state (paddles, ball, score)
+  state.ts       Game state (paddles, ball, score, wins)
   game.ts        Physics, collision, AI
   renderer.ts    Text/image rendering, page layouts, frame push
   events.ts      Event normalisation + input dispatch
   layout.ts      Display and grid constants
   logo.png       Splash screen logo (200×100)
   gameover.png   Game over graphic (200×100)
+api/
+  best-score.js  Vercel serverless function (Redis)
 ```
 
 ## Setup
@@ -81,8 +97,10 @@ npm run dev
 
 ```bash
 cd /path/to/even-dev
-APP_PATH=/path/to/pong-even-g2 ./start-even.sh
+REDIS_URL="redis://..." APP_PATH=/path/to/pong-even-g2 ./start-even.sh
 ```
+
+Set `REDIS_URL` to enable the global win count API. Without it, scores won't persist.
 
 ### Run on real glasses
 
@@ -103,4 +121,6 @@ npm run pack  # builds and creates pong.ehpk
 
 - **G2 frontend:** TypeScript + [Even Hub SDK](https://www.npmjs.com/package/@evenrealities/even_hub_sdk)
 - **Build:** [Vite](https://vitejs.dev/)
+- **Backend:** [Redis](https://redis.io/) via [ioredis](https://github.com/redis/ioredis) (global win count)
+- **Hosting:** [Vercel](https://vercel.com/) (serverless API + static frontend)
 - **CLI:** [evenhub-cli](https://www.npmjs.com/package/@evenrealities/evenhub-cli)

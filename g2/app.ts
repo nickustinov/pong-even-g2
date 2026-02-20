@@ -1,7 +1,7 @@
 import type { EvenAppBridge } from '@evenrealities/even_hub_sdk'
 import { appendEventLog } from '../_shared/log'
 import { TICK_MS } from './layout'
-import { game, setBridge, resetGame } from './state'
+import { game, setBridge, resetGame, fetchBestScore, submitScore } from './state'
 import { tick } from './game'
 import { initDisplay, pushFrame, showSplash } from './renderer'
 import { onEvenHubEvent, setStartGame } from './events'
@@ -23,6 +23,10 @@ async function gameLoop(): Promise<void> {
   }
 
   if (game.over) {
+    if (game.playerScore >= 7) {
+      game.highScore++
+      await submitScore(game.highScore)
+    }
     await pushFrame()
     appendEventLog(`Pong: game over ${game.playerScore}-${game.aiScore}`)
   }
@@ -52,5 +56,7 @@ export async function initApp(appBridge: EvenAppBridge): Promise<void> {
   })
 
   await initDisplay()
+  await fetchBestScore()
+  await pushFrame()
   appendEventLog('Pong: ready. Tap to start.')
 }
